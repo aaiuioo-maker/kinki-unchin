@@ -456,16 +456,29 @@ function drawIcon(size){
   const cv = document.createElement("canvas"); cv.width = cv.height = size;
   const ctx = cv.getContext("2d"), s = size / 180;
   const font = px => `700 ${px*s}px "Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif`;
-  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, size, size);                 // 上半分：白
-  ctx.fillStyle = "#c8231b"; ctx.fillRect(0, 100*s, size, 80*s);           // 下半分：赤い帯
+  const poly = (pts, col) => { ctx.fillStyle = col; ctx.beginPath(); pts.forEach(([x,y],i) => i ? ctx.lineTo(x*s,y*s) : ctx.moveTo(x*s,y*s)); ctx.closePath(); ctx.fill(); };
+  // 背景：赤のグラデーション
+  const bg = ctx.createLinearGradient(0, 0, 0, size);
+  bg.addColorStop(0, "#d9332a"); bg.addColorStop(1, "#c8231b");
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, size, size);
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.font = font(42); ctx.fillText("〒", 90*s, 38*s);                    // 白いところの上に〒
-  ctx.font = font(24); ctx.fillText("ゆうパック料金", 90*s, 80*s);          // その下に「ゆうパック料金」
-  ctx.fillStyle = "#fff"; ctx.font = font(44); ctx.fillText("近畿発", 90*s, 141*s);
-  // 左上に Claude Code のキャラクター（画面左上で動いているものと同じドット絵）を小さく描く
-  //   文字（y=57〜83くらい）に重ならないよう、その上の余白に置く
+  ctx.fillStyle = "#fff"; ctx.font = font(27); ctx.fillText("ゆうパック", 90*s, 31*s);
+  ctx.font = font(28); ctx.fillText("近畿発", 90*s, 155*s);
+  // 段ボール箱（上の面・右の面・正面）とテープ
+  poly([[55,75],[65,55],[145,55],[135,75]], "#fbf3e6");
+  poly([[135,75],[145,55],[145,115],[135,125]], "#ecd0ae");
+  poly([[55,75],[135,75],[135,125],[55,125]], "#fdf0df");
+  poly([[89,75],[99,55],[111,55],[101,75]], "#fde08a");
+  poly([[89,75],[101,75],[101,125],[89,125]], "#fdd977");
+  // 〒 と ¥ の札
+  [[62,"〒"],[106,"¥"]].forEach(([x, ch]) => {
+    ctx.fillStyle = "#fff"; ctx.strokeStyle = "#c8231b"; ctx.lineWidth = 2*s;
+    ctx.beginPath(); ctx.roundRect(x*s, 82*s, 22*s, 28*s, 3*s); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#c8231b"; ctx.font = font(18); ctx.fillText(ch, (x+11)*s, 96.5*s);
+  });
+  // Claude Code のキャラクター（画面左上で動いているものと同じドット絵）を箱の左、上下の真ん中あたりに描く
   (function(){
-    var p=2.5*s, ox=14*s, oy=14*s;   // 1ドットの大きさと左上の位置（180px基準）
+    var p=3*s, ox=11*s, oy=88*s;   // 1ドットの大きさと左上の位置（180px基準）
     var px=function(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(ox+x*p,oy+y*p,w*p,h*p);};
     var o='#d97757';
     px(2,0,8,6,o); px(0,2,2,2,o); px(10,2,2,2,o);               // 体と両腕
