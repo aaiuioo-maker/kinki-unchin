@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f1f3f2">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="近畿発運賃">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" id="ico-apple">
+<link rel="icon" id="ico-fav">
+<link rel="manifest" id="manifest">
+<title>近畿発 運賃表 2026.10.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f1f3f2; --paper:#fff; --ink:#111417; --muted:#5a6167; --line:#c4c9cd; --strong:#2a2e32; --head:#eceeef;
+  --accent:#c8231b; --blue:#1a3fd6; --cyan:#d3f6fd;
+  --r0:#fff; --r1:#fff9cf; --r2:#ffe1ee; --r3:#dff6dc; --r4:#dbf3fb; --r5:#ffe4d4;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+html,body{overflow-x:clip;max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;padding:0 12px 40px}
+button{font:inherit;cursor:pointer}
+.app{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.app>*{min-width:0}
+
+/* 上部固定バー */
+.bar{position:sticky;top:env(safe-area-inset-top,0);z-index:5;background:var(--bg);margin:0 -12px;padding:12px 12px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{margin:0;flex:1 1 auto;min-width:0;font-size:1.15rem;display:flex;align-items:baseline;column-gap:8px;flex-wrap:wrap}
+
+/* === Claude Code のキャラクター（ヘッダー左上） === */
+.cc-wrap { width: 62px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; margin-left: -6px; }
+.cc-mascot { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; padding-top: 4px; }
+.cc-mascot svg { width: 36px; height: 27px; shape-rendering: crispEdges; overflow: visible; transform-origin: center; }
+/* 歩く・立ち止まる・手足の動きは、下のスクリプト（ccMascot）で1コマずつ動かしている */
+.cc-mascot .cc-label { font-family: -apple-system, "Segoe UI", sans-serif; font-size: 7px; letter-spacing: 0.05em; color: #d97757; opacity: 0.8; white-space: nowrap; }
+.cc-body { fill: #d97757; }
+.cc-eye { fill: #1a1612; transform-box: fill-box; transform-origin: center; }
+/* ときどきまばたき */
+.cc-eye { animation: cc-blink 4s infinite; }
+@keyframes cc-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+h1 small{font-size:.78rem;color:var(--accent)}
+.pill{font-size:.78rem;font-weight:700;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:3px 10px;white-space:nowrap;flex:none}
+.pill[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;background:var(--head);border:1.5px solid #000;border-radius:10px}
+.seg button{font-weight:700;font-size:.92rem;line-height:1.25;padding:9px 6px;border:1.5px solid transparent;border-radius:8px;background:none;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:#000;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.seg button[aria-selected="true"].m{color:var(--blue)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* 郵便番号 */
+.zip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--paper);border:1.5px solid var(--strong);border-radius:10px;padding:8px 10px}
+.zip label{font-weight:700}
+.zip input{font:inherit;font-size:16px;font-weight:700;letter-spacing:.04em;flex:1 1 auto;max-width:11em;min-width:0;border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--bg);color:var(--ink);font-variant-numeric:tabular-nums}
+.mic{flex:none;width:40px;height:36px;border-radius:8px;border:1.5px solid #000;background:var(--paper);color:var(--ink);display:grid;place-items:center;padding:0}
+.mic svg{width:20px;height:20px}
+.mic.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.res{flex:1 1 60%;min-width:0;font-size:.85rem;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+.res.none{color:var(--muted);font-weight:400}
+.line{flex-basis:100%;min-width:0;border-top:1px dashed var(--line);padding:6px 2px 0}
+.addr{white-space:nowrap;overflow:hidden;font-size:19px;font-weight:700}
+.addr.none{white-space:normal;font-size:.82rem;font-weight:400;color:var(--muted)}
+.price{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.price .pl{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;font-size:17px;font-weight:700;color:var(--muted)}
+.price .pl b{color:var(--ink)}
+.price .pl em{font-style:normal;color:var(--accent)}
+.price .pa{flex:none;font-size:1.95rem;font-weight:700;color:var(--blue);white-space:nowrap;font-variant-numeric:tabular-nums}
+.price .pa small,.amt small{font-size:.85rem;margin-left:2px}
+
+/* 料金表 */
+.card{background:var(--paper);border:1.5px solid var(--strong);border-radius:10px;overflow:hidden}
+.ttl{margin:0;padding:9px 12px;font-weight:700;font-size:.95rem;border-bottom:1.5px solid var(--strong)}
+.ttl span{font-weight:400;color:var(--muted);font-size:.8rem;margin-left:6px}
+.multi .ttl{background:var(--cyan);color:var(--blue)}
+table{border-collapse:collapse;width:100%;table-layout:fixed;font-variant-numeric:tabular-nums}
+th,td{position:relative;border:1px solid var(--line);text-align:center;cursor:pointer;user-select:none}
+tr>:first-child{border-left:0} tr>:last-child{border-right:0}
+thead th{font-size:clamp(.62rem,2.6vw,.85rem);line-height:1.25;padding:6px 2px}
+thead th.sz{width:14%;background:var(--head);font-weight:400;color:var(--muted);cursor:default}
+tbody th{background:var(--head);font-size:clamp(.8rem,3.4vw,1rem);padding:10px 2px}
+.multi tbody th,.multi thead th.sz{background:var(--cyan);color:var(--blue)}
+td{font-size:clamp(.78rem,3.5vw,1.1rem);font-weight:700;padding:10px 2px;letter-spacing:-.01em}
+.c0{background:var(--r0)}.c1{background:var(--r1)}.c2{background:var(--r2)}.c3{background:var(--r3)}.c4{background:var(--r4)}.c5{background:var(--r5)}
+/* 選んだ列・行を赤枠で囲む */
+.on::before,.ron::after{content:"";position:absolute;inset:-1px;pointer-events:none;border:0 solid var(--accent)}
+.on::before{border-left-width:2px;border-right-width:2px}
+thead th.on::before{border-top-width:2px}
+tbody tr:last-child .on::before{border-bottom-width:2px}
+.ron::after{border-top-width:2px;border-bottom-width:2px}
+tbody th.ron::after{border-left-width:2px}
+tbody .ron:last-child::after{border-right-width:2px}
+.unit{padding:6px 12px;font-size:.75rem;color:var(--muted);text-align:right;border-top:1px solid var(--line)}
+
+/* 地域区分 */
+h2{font-size:.8rem;letter-spacing:.08em;color:var(--muted);margin:4px 2px 6px}
+.rg{border:1.5px solid var(--strong);border-radius:10px;overflow:hidden;background:var(--paper)}
+.rg-row{padding:8px 12px;display:flex;flex-direction:column;gap:4px}
+.rg-row+.rg-row{border-top:1px solid var(--line)}
+.rg-row b{font-size:.88rem}
+.pf{display:flex;flex-wrap:wrap;gap:6px}
+.pf button{font-size:.9rem;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:4px 9px}
+.pf button.hit{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.pf button.glow{animation:glow 1.2s ease-out}
+@keyframes glow{from{box-shadow:0 0 0 0 rgba(200,35,27,.7)}to{box-shadow:0 0 0 12px rgba(200,35,27,0)}}
+@media (prefers-reduced-motion:reduce){.pf button.glow{animation:none}}
+
+.notes{margin:0;padding:0 2px;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--muted)}
+.notes li{padding-left:1.1em;text-indent:-1.1em}
+.notes li::before{content:"※"}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bar">
+    <div class="top">
+      <div class="cc-wrap">
+        <a class="cc-mascot" href="https://claude.com/claude-code" target="_blank" rel="noopener" title="Claude Code で作成" aria-label="Claude Code で作成">
+          <!-- 1マス＝1ドットのドット絵（横12×縦8マス：体6段＋足2段） -->
+          <svg viewBox="0 -1 12 9" aria-hidden="true">
+            <!-- 足（左から順に4本）。上げるときは高さを1マスにする -->
+            <rect class="cc-body cc-leg" x="2" y="6" width="1" height="2"/>
+            <rect class="cc-body cc-leg" x="4" y="6" width="1" height="2"/>
+            <rect class="cc-body cc-leg" x="7" y="6" width="1" height="2"/>
+            <rect class="cc-body cc-leg" x="9" y="6" width="1" height="2"/>
+            <g class="cc-hop">
+              <rect class="cc-body" x="2" y="0" width="8" height="6"/>
+              <rect class="cc-body cc-arm-l" x="0" y="2" width="2" height="2"/>
+              <rect class="cc-body cc-arm-r" x="10" y="2" width="2" height="2"/>
+              <rect class="cc-eye" x="3" y="1" width="1" height="1"/>
+              <rect class="cc-eye" x="8" y="1" width="1" height="1"/>
+            </g>
+          </svg>
+          <span class="cc-label">Claude Code</span>
+        </a>
+      </div>
+      <h1>ゆうパック運賃 近畿発 <small>2026.10.1 新料金</small></h1>
+      <button id="snd" class="pill" aria-pressed="true">音 ON</button>
+    </div>
+    <div class="seg" role="tablist" aria-label="料金の種類">
+      <button role="tab" data-v="std" aria-selected="true">通常料金</button>
+      <button role="tab" data-v="multi" class="m" aria-selected="false">同一あて先・複数口</button>
+    </div>
+  </div>
+
+  <div class="zip">
+    <label for="zipin">〒</label>
+    <input id="zipin" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" placeholder="601-1337" aria-describedby="zipres">
+    <button id="mic" class="mic" type="button" aria-label="キーボードの音声入力で郵便番号を入れる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <button id="zipclr" class="pill" type="button">消去</button>
+    <span id="zipres" class="res none">頭2桁で都道府県</span>
+    <div id="zipaddr" class="line addr" hidden></div>
+    <div id="zipprice" class="line price" hidden><span class="pl" id="pl"></span><span class="pa" id="pa"></span></div>
+  </div>
+
+  <div class="card" id="card">
+    <p class="ttl" id="ttl"></p>
+    <table id="tbl"></table>
+    <div class="unit">単位：円</div>
+  </div>
+
+  <section>
+    <h2>あて先地域（タップで列を表示）</h2>
+    <div class="rg" id="rg"></div>
+  </section>
+
+  <ul class="notes">
+    <li>同一あて先割引・複数口割引は、どちらも1個につき60円引き（併用不可）。</li>
+    <li>郵便局に持ち込む場合は、さらに1個につき120円引き（持込割引）。</li>
+    <li>重さが25kgを超え30kg以下は、上表に＋620円（重量ゆうパック）。</li>
+    <li>ゆうパックでは信書・現金は送れません（無封の添え状・送り状は同封可）。</li>
+    <li>京都府内から差し出す前提で、「京都」をタップすると府内・県内の列を表示します。</li>
+    <li>新料金では関東・信越と九州が同額のため、1列にまとめています。</li>
+  </ul>
+</div>
+
+<script>
+"use strict";
+/* ===== データ ===== */
+const ORIGIN = "京都";          // 差出府県（ここあては府内料金）
+const DISCOUNT = 60;            // 同一あて先・複数口割引
+const HEADS = ["府内<br>県内","北陸東海<br>近畿<br>中国四国","関東<br>信越<br>九州","東北","沖縄","北海道"];
+const NAMES = ["府内・県内","北陸・東海・近畿・中国・四国","関東・信越・九州","東北","沖縄","北海道"];
+const SIZES = [60,80,100,120,140,160,170];
+const BASE = [ // 割引なしの基本運賃（2026.10.1）
+  [ 840, 970,1090,1270,1600,1910],
+  [1150,1320,1440,1580,1990,2240],
+  [1480,1650,1780,1960,2480,2590],
+  [1810,2010,2130,2290,2860,2920],
+  [2160,2600,2760,2930,3430,3610],
+  [2500,3000,3130,3300,3820,4000],
+  [3060,3680,4500,4670,5870,6040]];
+const REGIONS = [
+  {c:0, prefs:["差出と同じ府県内"], plain:true},
+  {c:3, prefs:["青森","岩手","宮城","秋田","山形","福島"]},
+  {c:1, prefs:["富山","石川","福井","岐阜","静岡","愛知","三重","滋賀","京都","大阪","兵庫","奈良","和歌山","鳥取","島根","岡山","広島","山口","徳島","香川","愛媛","高知"]},
+  {c:2, prefs:["茨城","栃木","群馬","埼玉","千葉","東京","神奈川","山梨","新潟","長野","福岡","佐賀","長崎","熊本","大分","宮崎","鹿児島"]},
+  {c:4, prefs:["沖縄"]},
+  {c:5, prefs:["北海道"]}];
+const PREF_COL = {};
+REGIONS.forEach(r => r.prefs.forEach(p => PREF_COL[p] = r.c));
+const colOf = p => p === ORIGIN ? 0 : PREF_COL[p];
+
+const PREFNO = [null,"北海道","青森","岩手","宮城","秋田","山形","福島","茨城","栃木","群馬","埼玉","千葉","東京","神奈川","新潟","富山","石川","福井","山梨","長野","岐阜","静岡","愛知","三重","滋賀","京都","大阪","兵庫","奈良","和歌山","鳥取","島根","岡山","広島","山口","徳島","香川","愛媛","高知","福岡","佐賀","長崎","熊本","大分","宮崎","鹿児島","沖縄"];
+const fullPref = p => p === "北海道" ? p : p === "東京" ? "東京都" : (p === "京都" || p === "大阪") ? p + "府" : p + "県";
+
+// 郵便番号の頭2桁 → 都道府県
+const ZIP2 = {};
+Object.entries({
+  "北海道":"00 04 05 06 07 08 09","秋田":"01","岩手":"02","青森":"03",
+  "東京":"10 11 12 13 14 15 16 17 18 19 20","神奈川":"21 22 23 24 25","千葉":"26 27 28 29","茨城":"30 31","栃木":"32",
+  "埼玉":"33 34 35 36","群馬":"37","長野":"38 39","山梨":"40","静岡":"41 42 43","愛知":"44 45 46 47 48 49",
+  "岐阜":"50","三重":"51","滋賀":"52","大阪":"53 54 55 56 57 58 59","京都":"60 61 62","奈良":"63","和歌山":"64",
+  "兵庫":"65 66 67","鳥取":"68","島根":"69","岡山":"70 71","広島":"72 73","山口":"74 75","香川":"76","徳島":"77",
+  "高知":"78","愛媛":"79","福岡":"80 81 82 83","佐賀":"84","長崎":"85","熊本":"86","大分":"87","宮崎":"88",
+  "鹿児島":"89","沖縄":"90","福井":"91","石川":"92","富山":"93","新潟":"94 95","福島":"96 97","宮城":"98","山形":"99"
+}).forEach(([p, ks]) => ks.split(" ").forEach(k => ZIP2[k] = p));
+const ZIPNOTE = {"49":"一部三重","61":"一部大阪","64":"一部奈良・三重","68":"一部島根","81":"一部長崎","87":"一部福岡"};
+
+/* ===== 状態 ===== */
+const S = {view: location.hash === "#multi" ? "multi" : "std", col: null, row: null, pref: null, zipPref: null};
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString("ja-JP");
+
+/* ===== 操作音 ===== */
+const Sound = {
+  on: true, ctx: null,
+  init(){ try{ this.on = localStorage.getItem("kinki-sound") !== "off"; }catch(e){} },
+  unlock(){ try{ this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)(); if(this.ctx.state === "suspended") this.ctx.resume(); }catch(e){} },
+  tone(f, t, d, v){
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = "square"; o.frequency.value = f;
+    g.gain.setValueAtTime(1e-4, t);
+    g.gain.exponentialRampToValueAtTime(v, t + .005);
+    g.gain.exponentialRampToValueAtTime(1e-4, t + d);
+    o.connect(g).connect(this.ctx.destination); o.start(t); o.stop(t + d + .02);
+  },
+  play(kind, opt){
+    if(!this.on || Voice.active) return;
+    try{
+      try{ if(navigator.audioSession) navigator.audioSession.type = "ambient"; }catch(e){}
+      this.unlock();
+      const t = this.ctx.currentTime + .01, v = .06;
+      if(kind === "hit"){ this.tone(1320,t,.06,v); this.tone(1760,t+.08,.08,v); }      // ピコピコ：金額が出た
+      else if(kind === "off"){ this.tone(660,t,.07,v); }                               // ポッ：解除・該当なし
+      else if(kind === "tab"){ this.tone(1046,t,.05,v); this.tone(1318,t+.06,.05,v); }
+      else if(kind === "found"){                                                       // ピロリン：住所が見つかった
+        const loud = opt && opt.afterVoice, t0 = t + (loud ? .35 : 0), fv = loud ? .7 : .11;
+        [1318.5,1568,2093].forEach((f,i) => this.tone(f, t0 + i*.06, i === 2 ? .13 : .05, fv));
+      }
+      else this.tone(1320,t,.06,v);                                                    // ピコッ
+    }catch(e){}
+  },
+  select(){ this.play(S.col !== null && S.row !== null ? "hit" : S.col === null && S.row === null ? "off" : "one"); }
+};
+Sound.init();
+const sndBtn = $("snd");
+const paintSnd = () => { sndBtn.textContent = Sound.on ? "音 ON" : "音 OFF"; sndBtn.setAttribute("aria-pressed", Sound.on); };
+sndBtn.onclick = () => { Sound.on = !Sound.on; try{ localStorage.setItem("kinki-sound", Sound.on ? "on" : "off"); }catch(e){} paintSnd(); Sound.play("one"); };
+paintSnd();
+
+/* 1行に収まるまで文字を小さくする */
+function fitLine(el, max, min){
+  let fs = max; el.style.fontSize = fs + "px";
+  while(el.scrollWidth > el.clientWidth && fs > min){ fs -= .5; el.style.fontSize = fs + "px"; }
+}
+
+/* ===== 描画 ===== */
+const card = $("card"), tbl = $("tbl");
+function render(){
+  const multi = S.view === "multi", off = multi ? DISCOUNT : 0;
+  card.classList.toggle("multi", multi);
+  $("ttl").innerHTML = multi ? `同一あて先・複数口割引<span>1個につき${DISCOUNT}円引き</span>` : "通常料金<span>割引なし・1個あたり</span>";
+  const on = c => c === S.col ? " on" : "", ron = r => r === S.row ? " ron" : "";
+  let h = `<thead><tr><th class="sz">サイズ</th>${HEADS.map((x,c) => `<th class="c${c}${on(c)}" data-c="${c}">${x}</th>`).join("")}</tr></thead><tbody>`;
+  BASE.forEach((r, ri) => {
+    h += `<tr><th class="${ron(ri)}" data-r="${ri}">${SIZES[ri]}</th>${r.map((v,c) => `<td class="c${c}${on(c)}${ron(ri)}" data-c="${c}" data-r="${ri}">${fmt(v - off)}</td>`).join("")}</tr>`;
+  });
+  tbl.innerHTML = h + "</tbody>";
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-selected", b.dataset.v === S.view));
+  document.querySelectorAll(".pf button").forEach(b =>
+    b.classList.toggle("hit", b.dataset.p === S.pref || (S.pref === null && S.col === 0 && !!b.dataset.plain)));
+
+  // 検索欄の中に「地域 × サイズ　金額」
+  const box = $("zipprice");
+  if(S.col !== null && S.row !== null){
+    const area = S.pref && S.pref !== "差出と同じ府県内" ? fullPref(S.pref) : NAMES[S.col];
+    $("pl").innerHTML = `<b>${area}</b> × <em>${SIZES[S.row]}</em><small>サイズ</small>`;
+    $("pa").innerHTML = `${fmt(BASE[S.row][S.col] - off)}<small>円</small>`;
+    box.hidden = false; fitLine($("pl"), 17, 9);
+  } else box.hidden = true;
+}
+
+/* ===== 料金表のタップ ===== */
+tbl.addEventListener("click", e => {
+  const el = e.target.closest("[data-c],[data-r]"); if(!el) return;
+  const c = el.dataset.c !== undefined ? +el.dataset.c : null, r = el.dataset.r !== undefined ? +el.dataset.r : null;
+  if(c !== null && r !== null){           // 金額セル
+    if(S.col === c && S.row === r){ S.col = S.row = null; } else { S.col = c; S.row = r; }
+    S.pref = null;
+  } else if(r !== null){ S.row = S.row === r ? null : r; }
+  else { S.col = (S.col === c && !S.pref) ? null : c; S.pref = null; }
+  Zip.dropIfStale(); render(); Sound.select();
+});
+document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { S.view = b.dataset.v; render(); Sound.play("tab"); });
+
+/* ===== 地域ボタン ===== */
+const rg = $("rg");
+REGIONS.forEach(r => {
+  const d = document.createElement("div"); d.className = "rg-row c" + r.c;
+  d.innerHTML = `<b>${NAMES[r.c]}</b><div class="pf">${r.prefs.map(p => `<button data-p="${p}"${r.plain ? ' data-plain="1"' : ""}>${p}</button>`).join("")}</div>`;
+  rg.appendChild(d);
+});
+rg.addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  const p = b.dataset.p;
+  if(S.pref === p){ S.pref = null; S.col = null; } else { S.pref = p; S.col = colOf(p); }
+  Zip.dropIfStale(); render(); Sound.select();
+  card.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center"});
+});
+
+/* ===== 郵便番号 ===== */
+// 音声入力の「ろくいちに」「六百十二」なども数字にする
+function speechToDigits(t){
+  t = t.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 65248));
+  const KD = {"〇":0,"零":0,"一":1,"二":2,"三":3,"四":4,"五":5,"六":6,"七":7,"八":8,"九":9};
+  t = t.replace(/[〇零一二三四五六七八九十百千]+/g, m => {
+    if(!/[十百千]/.test(m)) return [...m].map(c => KD[c]).join("");
+    let total = 0, cur = 0;
+    for(const c of m){ if(c in KD) cur = KD[c]; else { total += (cur || 1) * ({"十":10,"百":100,"千":1000})[c]; cur = 0; } }
+    return String(total + cur);
+  });
+  const W = [["きゅう",9],["ぜろ",0],["まる",0],["れい",0],["なな",7],["しち",7],["はち",8],["ろく",6],["よん",4],["さん",3],["いち",1],["にー",2],["ごー",5],["に",2],["ご",5],["く",9],["し",4]];
+  const kata = s => s.replace(/[ぁ-ゖ]/g, c => String.fromCharCode(c.charCodeAt(0) + 96));
+  for(const [w, n] of W){ t = t.split(w).join(n).split(kata(w)).join(n); }
+  return t.replace(/\D/g, "");
+}
+
+const zipin = $("zipin");
+const Zip = {
+  last2: "", looked: "", found: "", played: "", pending: false, cache: {}, wait: {},
+  digits(){ return speechToDigits(zipin.value).slice(0, 7); },
+  res(txt, ok){ const el = $("zipres"); el.textContent = txt; el.classList.toggle("none", !ok); },
+  addr(txt, ok){
+    const el = $("zipaddr"); el.hidden = !txt; el.textContent = txt || ""; el.classList.toggle("none", !ok); el.style.fontSize = "";
+    if(txt && ok) fitLine(el, 19, 11);
+  },
+  resetMarks(){ this.looked = this.found = this.played = ""; this.pending = false; },
+  clear(){ zipin.value = ""; this.last2 = ""; S.zipPref = null; this.resetMarks(); this.res("頭2桁で都道府県", false); this.addr("", false); },
+  // 郵便番号で選んだ地域と違うものを選んだら、検索結果を消す
+  dropIfStale(){ if(zipin.value && S.pref !== S.zipPref) this.clear(); },
+  apply(pref, note){
+    const changed = S.pref !== pref;
+    S.pref = S.zipPref = pref; S.col = colOf(pref);
+    render(); if(changed) Sound.select();
+    this.res(`${pref}（${NAMES[S.col]}）${note ? " ※" + note : ""}`, true);
+    const b = document.querySelector(`.pf button[data-p="${pref}"]`);
+    if(b && changed){ b.classList.remove("glow"); void b.offsetWidth; b.classList.add("glow"); }
+  },
+  // 7桁 → 町名（頭3桁ごとのデータを読み込む）
+  load(pre){
+    return new Promise((ok, ng) => {
+      if(this.cache[pre]) return ok(this.cache[pre]);
+      const first = !this.wait[pre]; (this.wait[pre] = this.wait[pre] || []).push(ok);
+      if(!first) return;
+      const sc = document.createElement("script");
+      sc.src = `https://cdn.jsdelivr.net/npm/japan-postal-code@0.3.0/zipdata/zip-${pre}.js`;
+      sc.onerror = () => { delete this.wait[pre]; ng(new Error("load")); };
+      document.head.appendChild(sc);
+    });
+  },
+  async lookup(d){
+    this.addr("住所を検索中…", false);
+    try{
+      const data = await this.load(d.slice(0, 3));
+      if(this.digits() !== d) return;
+      const v = data[d];
+      if(!v){ this.addr("この郵便番号は見つかりません", false); Sound.play("off"); return; }
+      const pref = PREFNO[v[0]];
+      this.addr(`${fullPref(pref)} ${v[1]} ${v[2] || ""}${v[3] ? " " + v[3] : ""}`.trim(), true);
+      this.apply(pref, "");
+      this.found = d;
+      // 入力中は鳴らさず、キーボードを下げたときに鳴らす
+      if(!Voice.active && (this.pending || document.activeElement !== zipin)) this.chime(d, false);
+    }catch(e){ if(this.digits() === d) this.addr("住所データを読み込めません（通信を確認）", false); }
+  },
+  chime(d, afterVoice){ if(this.played !== d){ Sound.play("found", {afterVoice}); this.played = d; } this.pending = false; },
+  process(e){
+    const d = this.digits();
+    // 音声入力中・変換中は入力欄を書き換えない（音声入力が止まるため）
+    if(!Voice.active && !(e && e.isComposing)){
+      const pretty = d.length > 3 ? d.slice(0, 3) + "-" + d.slice(3) : d;
+      if(zipin.value !== pretty) zipin.value = pretty;
+    }
+    if(d.length < 7){ this.addr("", false); this.resetMarks(); }
+    if(d.length < 2){ this.last2 = ""; this.res(Voice.active ? "キーボードのマイクで話してください" : "頭2桁で都道府県", false); return; }
+    const k = d.slice(0, 2), pref = ZIP2[k];
+    if(k !== this.last2){
+      this.last2 = k;
+      if(pref) this.apply(pref, ZIPNOTE[k]); else { this.res("該当なし", false); Sound.play("off"); }
+    } else if(pref && S.zipPref !== pref) this.apply(pref, ZIPNOTE[k]);
+    if(d.length === 7 && pref && d !== this.looked){ this.looked = d; this.lookup(d); }
+  }
+};
+window.zipdata = data => {   // 郵便番号データ（JSONP）の受け口
+  const k = Object.keys(data)[0]; if(!k) return;
+  const pre = k.slice(0, 3); Zip.cache[pre] = data;
+  (Zip.wait[pre] || []).forEach(f => f(data)); delete Zip.wait[pre];
+};
+zipin.addEventListener("input", e => Zip.process(e));
+zipin.addEventListener("compositionend", () => Zip.process());
+$("zipclr").onclick = () => {
+  Zip.clear();
+  if(S.pref || S.col !== null || S.row !== null){ S.pref = null; S.col = S.row = null; render(); Sound.select(); }
+  zipin.focus();
+};
+
+/* ===== 音声入力：文字キーボードに切り替えて、キーボードのマイクで話す ===== */
+const micBtn = $("mic");
+const Voice = {active: false, poll: null, raw: "", switching: false};
+micBtn.addEventListener("pointerdown", e => e.preventDefault());   // 入力欄のフォーカスを外さない
+micBtn.addEventListener("click", () => {
+  Sound.unlock(); Sound.play("tab");
+  Zip.clear(); S.zipPref = null;
+  Voice.active = true; micBtn.classList.add("on");
+  zipin.setAttribute("inputmode", "text");
+  Voice.switching = true; zipin.blur(); zipin.focus(); Voice.switching = false;
+  Zip.res("キーボードのマイクで話してください", false);
+  clearInterval(Voice.poll); Voice.raw = "";
+  Voice.poll = setInterval(() => { if(zipin.value !== Voice.raw){ Voice.raw = zipin.value; Zip.process(); } }, 250);
+});
+zipin.addEventListener("blur", () => {
+  if(Voice.switching) return;
+  const wasVoice = Voice.active;
+  if(wasVoice){
+    Voice.active = false; micBtn.classList.remove("on");
+    clearInterval(Voice.poll); Voice.poll = null;
+    zipin.setAttribute("inputmode", "numeric");
+    Zip.process();   // 最後に「601-1337」の形に整える
+  }
+  // キーボードを下げたとき：住所が見つかっていれば「できました」の音
+  const d = Zip.digits();
+  if(d.length === 7 && Zip.played !== d){ if(Zip.found === d) Zip.chime(d, wasVoice); else Zip.pending = true; }
+});
+
+/* ===== アイコン（canvas で描く） ===== */
+function drawIcon(size){
+  const cv = document.createElement("canvas"); cv.width = cv.height = size;
+  const ctx = cv.getContext("2d"), s = size / 180;
+  const font = px => `700 ${px*s}px "Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif`;
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, size, size);                 // 上半分：白
+  ctx.fillStyle = "#c8231b"; ctx.fillRect(0, 100*s, size, 80*s);           // 下半分：赤い帯
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = font(62); ctx.fillText("〒", 128*s, 54*s);
+  ctx.fillStyle = "#fff"; ctx.font = font(44); ctx.fillText("近畿発", 90*s, 141*s);
+  // 左上に Claude Code のキャラクター（画面左上で動いているものと同じドット絵）を小さく描く
+  (function(){
+    var p=4*s, ox=20*s, oy=26*s;   // 1ドットの大きさと左上の位置（180px基準）
+    var px=function(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(ox+x*p,oy+y*p,w*p,h*p);};
+    var o='#d97757';
+    px(2,0,8,6,o); px(0,2,2,2,o); px(10,2,2,2,o);               // 体と両腕
+    px(2,6,1,2,o); px(4,6,1,2,o); px(7,6,1,2,o); px(9,6,1,2,o); // 足4本
+    px(3,1,1,1,'#1a1612'); px(8,1,1,1,'#1a1612');               // 目
+  })();
+  return cv.toDataURL("image/png");
+}
+try{
+  const i180 = drawIcon(180), i192 = drawIcon(192), i512 = drawIcon(512);
+  $("ico-apple").href = i180; $("ico-fav").href = i192;
+  const mf = {name:"ゆうパック運賃 近畿発", short_name:"近畿発運賃", display:"standalone", background_color:"#f1f3f2", theme_color:"#c8231b",
+    start_url: location.href.split("#")[0],
+    icons:[{src:i192,sizes:"192x192",type:"image/png"},{src:i512,sizes:"512x512",type:"image/png"}]};
+  $("manifest").href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(mf));
+}catch(e){}
+
+// 画面の幅が変わったら（縦横の回転など）文字の大きさを合わせ直す
+addEventListener("resize", () => {
+  const a = $("zipaddr"); if(!a.hidden && !a.classList.contains("none")) fitLine(a, 19, 11);
+  if(!$("zipprice").hidden) fitLine($("pl"), 17, 9);
+});
+
+render();
+
+// =============================================================
+// Claude Code のキャラクター（ヘッダー左上）
+//   右へ歩く → 端で立ち止まって手足をちょこちょこ動かし、振り向く → 左へ戻る … を繰り返す
+// =============================================================
+(function ccMascot() {
+  const svg = document.querySelector('.cc-mascot svg');
+  if (!svg) return;
+  const body = svg.querySelector('.cc-hop');
+  const armL = svg.querySelector('.cc-arm-l');
+  const armR = svg.querySelector('.cc-arm-r');
+  const legs = Array.from(svg.querySelectorAll('.cc-leg')); // 左から順に4本
+
+  const HALF = 12;        // 真ん中から左右それぞれに歩く幅（px）
+  const STEP = 2;         // 1歩で進む距離（px）
+  const TICK = 220;       // 1コマの長さ（ミリ秒）
+  const IDLE_TICKS = 9;   // 端で立ち止まるコマ数
+
+  let x = -HALF, dir = 1, mode = 'idle', t = 0;
+
+  const legUp = (i, up) => legs[i].setAttribute('height', up ? 1 : 2);
+  const armUp = (el, up) => el.setAttribute('y', up ? 1 : 2);
+  const bob = up => body.setAttribute('transform', up ? 'translate(0,-1)' : '');
+  const rest = () => { legs.forEach((_, i) => legUp(i, false)); armUp(armL, false); armUp(armR, false); bob(false); };
+  const draw = () => { svg.style.transform = `translateX(${x}px) scaleX(${dir})`; };
+
+  function tick() {
+    t++;
+    if (mode === 'walk') {
+      // 歩く：外側2本と内側2本の足を交互に上げ、体も小さく弾ませる
+      const ph = t % 2;
+      armUp(armL, false); armUp(armR, false);
+      legUp(0, ph === 0); legUp(2, ph === 0);
+      legUp(1, ph === 1); legUp(3, ph === 1);
+      bob(ph === 0);
+      x += STEP * dir;
+      if (x <= -HALF || x >= HALF) {
+        x = Math.max(-HALF, Math.min(HALF, x));
+        mode = 'idle'; t = 0; rest();
+      }
+    } else {
+      // 立ち止まり：両腕を交互に上げ下げし、端の足でトントンと足踏み
+      const ph = t % 4;
+      armUp(armL, ph === 1);
+      armUp(armR, ph === 3);
+      legUp(0, ph === 2);
+      legUp(3, ph === 0);
+      bob(false);
+      if (t === Math.floor(IDLE_TICKS / 2)) dir = (x >= HALF) ? -1 : 1; // 途中で振り向く
+      if (t >= IDLE_TICKS) { mode = 'walk'; t = 0; rest(); }
+    }
+    draw();
+  }
+
+  draw();
+  setInterval(tick, TICK);
+})();
+</script>
+</body>
+</html>
