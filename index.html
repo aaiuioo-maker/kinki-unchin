@@ -459,7 +459,8 @@ function drawIcon(size){
   ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, size, size);                 // 上半分：白
   ctx.fillStyle = "#c8231b"; ctx.fillRect(0, 100*s, size, 80*s);           // 下半分：赤い帯
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.font = font(23); ctx.fillText("ゆうパック料金", 90*s, 70*s);          // 白いところに「ゆうパック料金」
+  ctx.font = font(44); ctx.fillText("〒", 90*s, 40*s);                    // 白いところの上に〒
+  ctx.font = font(22); ctx.fillText("ゆうパック料金", 90*s, 80*s);          // その下に「ゆうパック料金」
   ctx.fillStyle = "#fff"; ctx.font = font(44); ctx.fillText("近畿発", 90*s, 141*s);
   // 左上に Claude Code のキャラクター（画面左上で動いているものと同じドット絵）を小さく描く
   //   文字（y=57〜83くらい）に重ならないよう、その上の余白に置く
