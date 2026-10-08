@@ -477,6 +477,15 @@ function drawIcon(size){
     ctx.beginPath(); ctx.roundRect(x*s, 82*s, 22*s, 28*s, 3*s); ctx.fill(); ctx.stroke();
     ctx.fillStyle = "#c8231b"; ctx.font = font(18); ctx.fillText(ch, (x+11)*s, 96.5*s);
   });
+  // Claude Code のキャラクター（画面左上で動いているものと同じドット絵）を箱の正面の真ん中、〒と¥の札のあいだに描く
+  (function(){
+    var p=1.7*s, ox=74.8*s, oy=93*s;   // 1ドットの大きさと左上の位置（180px基準）
+    var px=function(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(ox+x*p,oy+y*p,w*p,h*p);};
+    var o='#d97757';
+    px(2,0,8,6,o); px(0,2,2,2,o); px(10,2,2,2,o);               // 体と両腕
+    px(2,6,1,2,o); px(4,6,1,2,o); px(7,6,1,2,o); px(9,6,1,2,o); // 足4本
+    px(3,1,1,1,'#1a1612'); px(8,1,1,1,'#1a1612');               // 目
+  })();
   return cv.toDataURL("image/png");
 }
 try{
