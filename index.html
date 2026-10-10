@@ -35,10 +35,11 @@ button{font:inherit;cursor:pointer}
 /* 上部固定バー */
 .bar{position:sticky;top:env(safe-area-inset-top,0);z-index:5;background:var(--bg);margin:0 -12px;padding:12px 12px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-h1{margin:0;flex:1 1 auto;min-width:0;font-size:1.15rem;display:flex;align-items:baseline;column-gap:8px;flex-wrap:wrap}
+h1{margin:0;flex:1 1 auto;min-width:0;font-size:1.15rem;display:flex;flex-direction:column;line-height:1.3}
+h1 .t{white-space:nowrap;overflow:hidden}   /* 「ゆうパック運賃 近畿発」は1行。入りきらないときは下のスクリプトで文字を小さくする */
 
 /* === Claude Code のキャラクター（ヘッダー左上） === */
-.cc-wrap { width: 62px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; margin-left: -6px; }
+.cc-wrap { width: 60px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; margin-left: -8px; }
 .cc-mascot { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; padding-top: 4px; }
 .cc-mascot svg { width: 36px; height: 27px; shape-rendering: crispEdges; overflow: visible; transform-origin: center; }
 /* 歩く・立ち止まる・手足の動きは、下のスクリプト（ccMascot）で1コマずつ動かしている */
@@ -52,7 +53,7 @@ h1{margin:0;flex:1 1 auto;min-width:0;font-size:1.15rem;display:flex;align-items
 /* === GitHub のマーク（ヘッダー左上、オレンジのキャラクターの右） ===
    横には動かず、その場で：タコの足をゆらゆら・ときどき首をかしげる・ときどき目をパチッ。タップすると1回転 */
 .gh-mascot { --gh-disc: #24292f; --gh-cat: #f1f3f2; --gh-text: #57606a; }   /* ヘッダーの背景（明るい灰色）に合わせた色 */
-.gh-wrap { width: 50px; height: 46px; flex-shrink: 0; display: flex; justify-content: center; align-items: flex-end; margin-right: 6px; }
+.gh-wrap { width: 36px; height: 46px; flex-shrink: 0; display: flex; justify-content: center; align-items: flex-end; margin-left: -6px; }   /* オレンジのキャラクターとの間を少しつめる */
 .gh-mascot { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 46px; gap: 3px; text-decoration: none; }
 .gh-mascot svg { width: 24px; height: 24px; overflow: visible; }   /* オレンジのキャラクター（足先まで24px）と上下の端をそろえる */
 .gh-label { font-family: -apple-system, "Segoe UI", sans-serif; font-size: 7px; letter-spacing: 0.05em; color: var(--gh-text); opacity: 0.8; white-space: nowrap; }
@@ -197,7 +198,7 @@ h2{font-size:.8rem;letter-spacing:.08em;color:var(--muted);margin:4px 2px 6px}
           <span class="gh-label">GitHub</span>
         </a>
       </div>
-      <h1>ゆうパック運賃 近畿発 <small>2026.10.1 新料金</small></h1>
+      <h1><span class="t">ゆうパック運賃 近畿発</span><small>2026.10.1 新料金</small></h1>
       <button id="snd" class="pill" aria-pressed="true">音 ON</button>
     </div>
     <div class="seg" role="tablist" aria-label="料金の種類">
@@ -552,8 +553,14 @@ try{
   $("manifest").href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(mf));
 }catch(e){}
 
+// タイトル「ゆうパック運賃 近畿発」を1行に収める（せまい画面では文字を小さくする）
+const fitTitle = () => fitLine(document.querySelector("h1 .t"), 18.4, 12);
+fitTitle();
+if (document.fonts) document.fonts.ready.then(fitTitle);   // 文字の形（フォント）が読み込まれたら合わせ直す
+
 // 画面の幅が変わったら（縦横の回転など）文字の大きさを合わせ直す
 addEventListener("resize", () => {
+  fitTitle();
   const a = $("zipaddr"); if(!a.hidden && !a.classList.contains("none")) fitLine(a, 19, 11);
   if(!$("zipprice").hidden) fitLine($("pl"), 17, 9);
 });
