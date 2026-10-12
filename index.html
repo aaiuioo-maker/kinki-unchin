@@ -136,9 +136,75 @@ h2{font-size:.8rem;letter-spacing:.08em;color:var(--muted);margin:4px 2px 6px}
 .notes{margin:0;padding:0 2px;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--muted)}
 .notes li{padding-left:1.1em;text-indent:-1.1em}
 .notes li::before{content:"※"}
+
+/* === オープニング（開いたときに出る赤い画面） === */
+.op{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top)) 20px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(#d9332a,#b81d16);color:#fff;cursor:pointer;transition:opacity .5s,visibility .5s;overflow:auto}
+.op.hide{opacity:0;visibility:hidden}
+.op-in{width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.op-sub{margin:0;font-size:.85rem;font-weight:700;background:#fff;color:#c8231b;border-radius:999px;padding:3px 14px;animation:op-drop .5s both}
+.op-t{margin:0;display:flex;flex-direction:column;line-height:1.15;color:#fff;font-size:1rem;letter-spacing:0;text-shadow:0 2px 0 rgba(0,0,0,.15)}   /* 運賃表の h2 の色・大きさを打ち消す */
+.op-t span{font-size:2.1rem;animation:op-drop .6s .1s both}
+.op-t b{font-size:3.2rem;letter-spacing:.1em;animation:op-drop .6s .25s both}
+/* キャラクターの台（白いカード）：赤地だとオレンジが見えにくいので白の上に置く */
+.op-chars{display:flex;align-items:flex-end;justify-content:center;gap:26px;background:#fff;border-radius:18px;padding:16px 24px 10px;box-shadow:0 6px 0 rgba(0,0,0,.15);animation:op-rise .6s .4s both}
+.op-c{display:flex;flex-direction:column;align-items:center;gap:6px;font:10px -apple-system,"Segoe UI",sans-serif;letter-spacing:.05em}
+.op-cc{width:102px;height:69px;shape-rendering:crispEdges;overflow:visible}
+.op-c.cc span{color:#d97757}
+.op-gh{--gh-disc:#24292f;--gh-cat:#fff;color:#57606a}
+.op-gh svg{width:48px;height:48px;overflow:visible}   /* オレンジの体（頭から足先まで48px）と高さをそろえる */
+.op-gh.spin .gh-all{animation:gh-spin .7s cubic-bezier(.34,1.4,.64,1)}
+.op-hello{margin:0;font-size:1rem;font-weight:700;animation:op-rise .6s .55s both}
+.op-tip{margin:0;font-size:.85rem;line-height:1.5;min-height:3em;background:rgba(0,0,0,.14);border-radius:10px;padding:8px 12px;animation:op-rise .6s .65s both}
+.op-bar{width:72%;height:6px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden}
+.op-bar i{display:block;height:100%;width:0;background:#fff;transition:width 1.5s linear}
+.op-go{font:inherit;font-weight:700;font-size:1.05rem;background:#fff;color:#c8231b;border:0;border-radius:999px;padding:12px 30px;box-shadow:0 4px 0 rgba(0,0,0,.18);animation:op-pulse 1.4s ease-in-out infinite}
+.op-go.busy{animation:none;opacity:.85}
+@keyframes op-drop{from{transform:translateY(-24px);opacity:0}}
+@keyframes op-rise{from{transform:translateY(20px);opacity:0}}
+@keyframes op-pulse{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.op *{animation:none!important}}
 </style>
 </head>
 <body>
+<!-- オープニング：タップすると音が鳴って、運賃表に切りかわる -->
+<div class="op" id="op" role="dialog" aria-label="オープニング">
+  <div class="op-in">
+    <p class="op-sub">2026.10.1 新料金</p>
+    <h2 class="op-t"><span>ゆうパック運賃</span><b>近畿発</b></h2>
+    <div class="op-chars">
+      <div class="op-c cc"><svg class="cc-anim op-cc" viewBox="0 -7 34 23" data-skip="60" aria-hidden="true"></svg><span>Claude Code</span></div>
+      <div class="op-c op-gh">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <defs><clipPath id="ghClipOp"><circle cx="8" cy="8" r="8"/></clipPath></defs>
+          <g class="gh-all">
+            <circle class="gh-disc" cx="8" cy="8" r="8"/>
+            <g clip-path="url(#ghClipOp)">
+              <path class="gh-cat" d="M6.75 10.3 C6.45 10.7 6.3 11.2 6.3 11.8 L6.3 15.1 Q6.3 15.6 6.8 15.6 L9.2 15.6 Q9.7 15.6 9.7 15.1 L9.7 11.8 C9.7 11.2 9.55 10.7 9.25 10.3 Z"/>
+              <g class="gh-head">
+                <path class="gh-cat" d="M4.15 4.75 C3.85 3.85 3.95 2.85 4.3 2.1 C4.3 2.1 5.05 1.95 6.35 2.9 C6.9 2.75 7.45 2.68 8 2.68 C8.55 2.68 9.1 2.75 9.65 2.9 C10.95 1.95 11.7 2.1 11.7 2.1 C12.05 2.85 12.15 3.85 11.85 4.75 C12.4 5.3 12.75 6.0 12.75 6.95 C12.75 9.75 10.95 10.45 8 10.55 C5.05 10.45 3.25 9.75 3.25 6.95 C3.25 6.0 3.6 5.3 4.15 4.75 Z"/>
+                <rect class="gh-eyes" x="5.5" y="6.1" width="1" height="1.5" rx="0.5"/>
+                <rect class="gh-eyes" x="9.5" y="6.1" width="1" height="1.5" rx="0.5"/>
+              </g>
+              <g class="gh-tail">
+                <path class="gh-tail-line" d="M6.5 12.35 C5.3 12.55 4.65 12.0 4.25 11.25 C3.95 10.7 3.6 10.35 3.0 10.25"/>
+                <circle class="gh-dot" cx="5.5" cy="12.2" r="0.17"/>
+                <circle class="gh-dot" cx="4.75" cy="11.75" r="0.17"/>
+                <circle class="gh-dot" cx="4.25" cy="11.05" r="0.17"/>
+                <circle class="gh-dot" cx="3.7" cy="10.5" r="0.17"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+        <span>GitHub</span>
+      </div>
+    </div>
+    <p class="op-hello" id="ophello"></p>
+    <p class="op-tip" id="optip"></p>
+    <div class="op-bar"><i id="opbar"></i></div>
+    <button class="op-go" id="opgo" type="button">タップしてはじめる</button>
+  </div>
+</div>
+
 <div class="app">
   <div class="bar">
     <div class="top">
@@ -295,6 +361,19 @@ const Sound = {
         [1318.5,1568,2093].forEach((f,i) => this.tone(f, t0 + i*.06, i === 2 ? .13 : .05, fv));
       }
       else this.tone(1320,t,.06,v);                                                    // ピコッ
+    }catch(e){}
+  },
+  // カタッ（キーボードを打つ音）。d 秒あとに鳴らす
+  key(d){
+    if(!this.on) return;
+    try{
+      this.unlock();
+      const c = this.ctx, t = c.currentTime + .01 + d, len = Math.floor(c.sampleRate * .03);
+      const buf = c.createBuffer(1, len, c.sampleRate), a = buf.getChannelData(0);
+      for(let i = 0; i < len; i++) a[i] = (Math.random()*2 - 1) * Math.pow(1 - i/len, 3);
+      const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+      s.buffer = buf; f.type = "highpass"; f.frequency.value = 1500 + Math.random()*900; g.gain.value = .4;
+      s.connect(f).connect(g).connect(c.destination); s.start(t);
     }catch(e){}
   },
   select(){ this.play(S.col !== null && S.row !== null ? "hit" : S.col === null && S.row === null ? "off" : "one"); }
@@ -566,11 +645,19 @@ render();
     }).join('');
   }).join(''));
   const total = SEQ.reduce((s, q) => s + q[1], 0);
-  let shown = -1;
+  // data-skip="60" を付けた絵（オープニング）は、最初の止まっている2秒を飛ばしてすぐ打ちはじめる
+  const shown = new Map();
+  function frameAt(t) {
+    t %= total;
+    for (const [f, len] of SEQ) { if (t < len) return f; t -= len; }
+    return SEQ[0][0];
+  }
   function draw(now) {
-    let t = Math.floor(now / (1000 / 30)) % total, id = SEQ[0][0];
-    for (const [f, len] of SEQ) { if (t < len) { id = f; break; } t -= len; }
-    if (id !== shown) { svgs.forEach(s => { s.innerHTML = svgOf[id]; }); shown = id; }
+    const base = Math.floor(now / (1000 / 30));
+    svgs.forEach(s => {
+      const id = frameAt(base + (+s.dataset.skip || 0));
+      if (shown.get(s) !== id) { s.innerHTML = svgOf[id]; shown.set(s, id); }
+    });
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
@@ -585,6 +672,45 @@ render();
   });
   gh.addEventListener('animationend', function(e) {
     if (e.animationName === 'gh-spin') gh.classList.remove('spin');
+  });
+})();
+
+// =============================================================
+// オープニング：タップすると、カタカタ（キーボード）→ ピロリン の音が鳴り、
+//   白いバーが伸びきったら運賃表に切りかわる。準備中にもう一度タップするとすぐ閉じる
+// =============================================================
+(function opening() {
+  const op = $("op");
+  if (!op) return;
+  const h = new Date().getHours();
+  $("ophello").textContent = h < 5 ? "夜おそくまで、おつかれさまです" : h < 11 ? "おはようございます" : h < 17 ? "こんにちは" : "おつかれさまです";
+  const TIPS = [
+    "同一あて先・複数口割引は、1個につき60円引き",
+    "郵便局に持ち込むと、1個につき120円引き",
+    "25kgを超えて30kgまでは、表の料金に＋620円",
+    "郵便番号を入れると、住所と料金がすぐ出ます",
+    "マイクのボタンで、郵便番号を話して入力できます",
+    "京都あては「府内・県内」の料金になります"];
+  $("optip").textContent = "ひとこと：" + TIPS[Math.floor(Math.random() * TIPS.length)];
+  document.documentElement.style.overflow = "hidden";   // オープニング中は後ろの画面を動かさない
+
+  let started = false;
+  function close() {
+    op.classList.add("hide");
+    document.documentElement.style.overflow = "";
+    setTimeout(() => op.remove(), 600);
+  }
+  op.addEventListener("click", () => {
+    if (started) { close(); return; }
+    started = true;
+    Sound.unlock();
+    Sound.play("tab");
+    $("opgo").textContent = "準備中…"; $("opgo").classList.add("busy");
+    op.querySelector(".op-gh").classList.add("spin");            // GitHub のマークがくるっと回る
+    for (let i = 0; i < 14; i++) Sound.key(.15 + i * .095 + Math.random() * .03);   // カタカタ…
+    requestAnimationFrame(() => { $("opbar").style.width = "100%"; });
+    setTimeout(() => Sound.play("found"), 1650);                  // ピロリン
+    setTimeout(close, 2300);
   });
 })();
 </script>
