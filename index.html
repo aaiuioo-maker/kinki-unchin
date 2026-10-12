@@ -39,7 +39,7 @@ h1{margin:0;flex:1 1 auto;min-width:0;font-size:1.15rem;display:flex;flex-direct
 h1 .t{white-space:nowrap;overflow:hidden}   /* 「ゆうパック運賃 近畿発」は1行。入りきらないときは下のスクリプトで文字を小さくする */
 
 /* === Claude Code のキャラクター（ヘッダー左上） === */
-.cc-wrap { width: 60px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; margin-left: -2px; }   /* 少し右へ（右の GitHub のマークにはかぶらない） */
+.cc-wrap { width: 60px; height: 40px; flex-shrink: 0; display: flex; justify-content: center; margin-left: 4px; }   /* 右へ寄せる（右の GitHub のマークにはかぶらない） */
 .cc-mascot { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; padding-top: 4px; }
 .cc-mascot svg { width: 51px; height: 34.5px; shape-rendering: crispEdges; overflow: visible; }  /* 右の約15pxはノートパソコンが出る場所。中の絵は ccTyping が描く */
 .cc-mascot .cc-label { font-family: -apple-system, "Segoe UI", sans-serif; font-size: 7px; letter-spacing: 0.05em; color: #d97757; opacity: 0.8; white-space: nowrap; }
@@ -48,7 +48,7 @@ h1 .t{white-space:nowrap;overflow:hidden}   /* 「ゆうパック運賃 近畿�
 /* === GitHub のマーク（ヘッダー左上、オレンジのキャラクターの右） ===
    横には動かず、その場で：タコの足をゆらゆら・ときどき首をかしげる・ときどき目をパチッ。タップすると1回転 */
 .gh-mascot { --gh-disc: #24292f; --gh-cat: #f1f3f2; --gh-text: #57606a; }   /* ヘッダーの背景（明るい灰色）に合わせた色 */
-.gh-wrap { width: 36px; height: 46px; flex-shrink: 0; display: flex; justify-content: center; align-items: flex-end; margin-left: -6px; }   /* オレンジのキャラクターとの間を少しつめる */
+.gh-wrap { width: 36px; height: 46px; flex-shrink: 0; display: flex; justify-content: center; align-items: flex-end; margin-left: -12px; }   /* オレンジのキャラクターとの間をつめる（GitHub のマークの位置はそのまま） */
 .gh-mascot { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 46px; gap: 3px; text-decoration: none; }
 .gh-mascot svg { width: 24px; height: 24px; overflow: visible; }   /* オレンジのキャラクター（足先まで24px）と上下の端をそろえる */
 .gh-label { font-family: -apple-system, "Segoe UI", sans-serif; font-size: 7px; letter-spacing: 0.05em; color: var(--gh-text); opacity: 0.8; white-space: nowrap; }
