@@ -369,11 +369,10 @@ const Sound = {
     try{
       this.unlock();
       const c = this.ctx, t = c.currentTime + .01 + d, len = Math.floor(c.sampleRate * .03);
-      const buf = c.createBuffer(1, len, c.sampleRate), a = buf.getChannelData(0);
-      for(let i = 0; i < len; i++) a[i] = (Math.random()*2 - 1) * Math.pow(1 - i/len, 3);
-      const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-      s.buffer = buf; f.type = "highpass"; f.frequency.value = 1500 + Math.random()*900; g.gain.value = .4;
-      s.connect(f).connect(g).connect(c.destination); s.start(t);
+      const o=c.createOscillator(), g=c.createGain();   // 覚書と同じカタカタ音
+      o.type='square'; o.frequency.value=1700+Math.random()*500;
+      g.gain.setValueAtTime(.035,t); g.gain.exponentialRampToValueAtTime(.001,t+.025);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+.035);
     }catch(e){}
   },
   select(){ this.play(S.col !== null && S.row !== null ? "hit" : S.col === null && S.row === null ? "off" : "one"); }
